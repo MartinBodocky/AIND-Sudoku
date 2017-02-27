@@ -18,21 +18,13 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-
-    # Find all instances of naked twins
-    twins = []
-    for first in '123456789':
-        for second in '123456789':
-            if first != second:
-                twins.append(first + second)
-
     # Eliminate the naked twins as possibilities for their peers
     for unit in unitlist:
         for digits in twins:
             dplaces = [box for box in unit if digits == values[box]]
 
             # if found, do the elimination in the corresponding unit
-            if len(dplaces) == 2:
+            if len(dplaces) >= 2:
                 for digit in digits:
                     for member in unit:
                         if member != dplaces[1] and member != dplaces[0] and len(values[member]) > 1:
@@ -65,7 +57,12 @@ unitlist = row_units + column_units + square_units + diagonal_units
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s], [])) - set([s])) for s in boxes)
 
-
+# Find all instances of naked twins
+twins = []
+for first in '123456789':
+    for second in '123456789':
+        if first != second:
+            twins.append(first + second)
 
 
 def grid_values(grid):

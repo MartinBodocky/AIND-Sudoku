@@ -3,11 +3,14 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: *Student should provide answer here*
+A: First we create collection of all possible twins. 
+Then we need to find two or more occurrences of those twins in cells by constrains.
+Finally remove all their digits from rest cells in constrains.
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-A: *Student should provide answer here*
+A: *The solution is prepared to add more constrains, 
+the easier way is define space of constrain and add it into unit list.*
 
 ### Install
 
