@@ -20,7 +20,26 @@ def naked_twins(values):
     """
 
     # Find all instances of naked twins
+    twins = []
+    for first in '123456789':
+        for second in '123456789':
+            if first != second:
+                twins.append(first + second)
+
     # Eliminate the naked twins as possibilities for their peers
+    for unit in unitlist:
+        for digits in twins:
+            dplaces = [box for box in unit if digits == values[box]]
+
+            # if found, do the elimination in the corresponding unit
+            if len(dplaces) == 2:
+                for digit in digits:
+                    for member in unit:
+                        if member != dplaces[1] and member != dplaces[0] and len(values[member]) > 1:
+                            newvalue = values[member].replace(digit, '')
+                            assign_value(values, member, newvalue)
+
+    return values
 
 rows = 'ABCDEFGHI'
 cols = '123456789'
@@ -34,10 +53,19 @@ boxes = cross(rows, cols)
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
-# diagonal_units =
-unitlist = row_units + column_units + square_units
+
+# create two diagonals
+diagonal_units=[[],[]]
+for i in range(1,len(rows)+1):
+    diagonal_units[0].append(rows[i-1]+cols[i-1])
+    diagonal_units[1].append(rows[i-1]+cols[len(rows)-i])
+
+# put all units together
+unitlist = row_units + column_units + square_units + diagonal_units
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s], [])) - set([s])) for s in boxes)
+
+
 
 
 def grid_values(grid):
@@ -89,7 +117,9 @@ def eliminate(values):
     for box in solved_boxes:
         digit = values[box]
         for peer in peers[box]:
-            values[peer] = values[peer].replace(digit, '')
+            newValue = values[peer].replace(digit, '')
+            assign_value(values, peer, newValue)
+            #values[peer] = newValue
 
     return values
 
@@ -112,7 +142,8 @@ def only_choice(values):
             # print('DPlaces')
             # print(dplaces)
             if len(dplaces) == 1:
-                values[dplaces[0]] = digit
+                #values[dplaces[0]] = digit
+                assign_value(values, dplaces[0], digit)
 
     return values
 
@@ -132,8 +163,11 @@ def reduce_puzzle(values):
         # Your code here: Use the Eliminate Strategy
         values = eliminate(values)
 
+        # Apply naked twins
+        values = naked_twins(values)
+
         # Your code here: Use the Only Choice Strategy
-        value = only_choice(values)
+        values = only_choice(values)
 
         # Check how many boxes have a determined value, to compare
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
@@ -180,6 +214,9 @@ def solve(grid):
 
     return values
 
+def test():
+    diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+    display(solve(diag_sudoku_grid))
 
 
 if __name__ == '__main__':
